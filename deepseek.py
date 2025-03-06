@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+from utils.chatbot_utils import ChatBot, is_system_under_high_load, combine_message
+from utils.db_utils import check_chat_exists, create_chat, get_chat_history_list, get_conversation, update_database
 from flask import Flask, request, jsonify, Response
 from openai import OpenAI
 import psutil
@@ -9,13 +12,15 @@ import os
 
 app = Flask(__name__)
 
+load_dotenv()
 
 # Supabase connection config
 # database already exists
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "dummy_key")
 SECRET_KEY = os.environ.get("SECRET_KEY", "dummy_secret")
-client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 CLIENT_XUNFEI1_API_KEY = os.environ.get("CLIENT_XUNFEI1_API_KEY", "dummy_xunfei_key")
@@ -38,81 +43,6 @@ client_xunfei1 = OpenAI(
 
 lt = [client_xunfei, client_xunfei1]
 
-class ChatBot:
-    def __init__(self, client):
-        self.client = client
-        self.conversation_history = [{"role": "system", "content": "Use English to reply."}]
-
-    # store new message in conversation_history
-    def add_message(self, message):
-        self.conversation_history.extend(message)
-
-    # return response
-    # if stream is False, don't return until deepseek generate whole sentences
-    # if stream is True, return while deepseek generate sentences
-    # streaming is disabled when underload
-    def chat(self, message, model="xdeepseekv3", stream=False):
-        self.add_message(message)
-        try:
-            if stream: # Streaming response
-                response = self.client.chat.completions.create(
-                    model=model,
-                    messages=self.conversation_history,
-                    temperature=0.7,
-                    max_tokens=16384,
-                    extra_headers={"lora_id": "0"},
-                    stream=True,
-                    stream_options={"include_usage": True}
-                )
-
-                for chunk in response:
-                    if hasattr(chunk.choices[0].delta, "content") and chunk.choices[0].delta.content:
-                        chunk_content = chunk.choices[0].delta.content
-                        yield chunk_content
-
-            else: # Normal response
-                response = self.client.chat.completions.create(
-                    model=model,
-                    messages=self.conversation_history,
-                    temperature=0.7,
-                    max_tokens=16384,
-                    extra_headers={"lora_id": "0"}
-                )
-
-                assistant_message = response.choices[0].message.content
-                self.conversation_history.append({"role": "assistant", "content": assistant_message})
-                return assistant_message
-        except Exception as e:
-            return f"Error: {e}"
-        
-# Determine whether the server is under high load by evaluating CPU or memory usage
-def is_system_under_high_load():
-    cpu_usage = psutil.cpu_percent()
-    memory_usage = psutil.virtual_memory().percent
-    return cpu_usage > 80 or memory_usage > 80
-
-
-# Reduce token consumption
-# by removing unnecessary information (such as timestamps) from the chat history.
-def combine_message(message, updated_messages):
-    print(updated_messages)
-    conversation_history = [{"role": msg["role"], "content": msg["content"]}
-                            for msg in updated_messages['messages']]
-    conversation_history.append({"role": "user", "content": message})
-    return conversation_history
-
-# update datebase
-def update_database(updated_messages, message, assistant_message, conversation):
-    updated_messages['messages'].append(
-        {"role": "user", "content": message, "timestamp": datetime.datetime.now().isoformat()})
-    updated_messages['messages'].append(
-        {"role": "assistant", "content": assistant_message, "timestamp": datetime.datetime.now().isoformat()})
-
-    client.table('chat_history').update({
-        "messages": updated_messages, "updated_at": datetime.datetime.now().isoformat()
-    }).eq('id', conversation.data[0]['id']).execute()
-
-    print("database update successfully")
 
 # start chat
 @app.route('/start_chat', methods=['POST'])
@@ -134,23 +64,13 @@ def start_chat():
         chat_name = data.get('chat_name', 'Untitled Chat')
 
         # Check if a chat with the same name already exists
-        existing_chat = client.table('chat_history') \
-            .select('*') \
-            .eq('user_id', user_id) \
-            .eq('name', chat_name) \
-            .execute()
+        existing_chat = check_chat_exists(supabase_client, user_id, chat_name)
 
         if existing_chat.data:
             return jsonify({"message": "Chat already exists", "chat_name": chat_name}), 200
 
         # **Create a new chat with no initial messages**
-        client.table('chat_history').insert({
-            "user_id": user_id,
-            "name": chat_name,
-            "messages": {"messages": []},  # Empty chat history
-            "created_at": datetime.datetime.now().isoformat(),
-            "updated_at": datetime.datetime.now().isoformat(),
-        }).execute()
+        create_chat(supabase_client, user_id, chat_name)
 
         return jsonify({"message": "Chat started", "chat_name": chat_name}), 200
 
@@ -176,10 +96,7 @@ def chat_list():
         user_id = decoded_token['user_id']
 
         # Retrieve the chat history list for the user
-        response = client.table('chat_history') \
-            .select("name") \
-            .eq('user_id', user_id) \
-            .execute()
+        response = get_chat_history_list(supabase_client, user_id)
 
         return jsonify({"chats": [conv["name"] for conv in response.data]}), 200
 
@@ -213,11 +130,7 @@ def chat_history():
         user_id = decoded_token['user_id']
 
         # Query the database for the user's specific chat history
-        conversation = client.table('chat_history') \
-            .select('*') \
-            .eq('user_id', user_id) \
-            .eq('name', chat_name) \
-            .execute()
+        conversation = get_chat_history_list(supabase_client, user_id, chat_name)
 
         if conversation.data:
             messages = conversation.data[0].get('messages', {}).get('messages', [])
@@ -249,11 +162,7 @@ def send_message():
         user_id = decoded_token['user_id']
 
         # Check if the chat history exists for the user and chat_name
-        conversation = client.table('chat_history') \
-            .select('*') \
-            .eq('user_id', user_id) \
-            .eq('name', chat_name) \
-            .execute()
+        conversation = check_chat_exists(supabase_client, user_id, chat_name)
 
         if not conversation.data:
             return jsonify({"message": "Chat not found"}), 404
@@ -268,18 +177,17 @@ def send_message():
         if is_system_under_high_load():
             # Use a normal (non-streaming) response under high load.
             assistant_message = chatbot.chat(conversation_history, stream=False)
-            update_database(updated_messages, message, assistant_message, conversation)
+            update_database(supabase_client, updated_messages, message, assistant_message, conversation)
             return jsonify({"message": assistant_message}), 200
         else:
             # Use a streaming response.
             assistant_message = ""  # Used to accumulate the entire output.
-
             def generate():
                 nonlocal assistant_message
                 for chunk in chatbot.chat(conversation_history, stream=True):
                     assistant_message += chunk
                     yield chunk  # Send chunks to the frontend in real time
-                update_database(updated_messages, message, assistant_message, conversation)
+                update_database(supabase_client, updated_messages, message, assistant_message, conversation)
 
             return Response(generate(), content_type='text/plain;charset=utf-8')
 
