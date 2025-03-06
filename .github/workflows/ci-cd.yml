@@ -54,31 +54,35 @@ jobs:
       - name: Run pytest with dummy environment variables
         run: |
           python -m pytest
+  build:
+    needs: unit-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-  #     - name: Login to DockerHub
-  #       uses: docker/login-action@v2
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-  #     - name: Build Chat Image
-  #       run: |
-  #         docker build -f Dockerfile.chat -t your_dockerhub_username/chat:latest .
+      - name: Build Chat Image
+        run: |
+          docker build -f Dockerfile.chat -t ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest .
 
-  #     - name: Build SPA Image
-  #       run: |
-  #         docker build -f Dockerfile.spa -t your_dockerhub_username/spa:latest .
+      - name: Build SPA Image
+        run: |
+          docker build -f Dockerfile.spa -t ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest .
 
-  #     - name: Push Chat Image
-  #       run: |
-  #         docker push your_dockerhub_username/chat:latest
+      - name: Push Chat Image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest
 
-  #     - name: Push SPA Image
-  #       run: |
-  #         docker push your_dockerhub_username/spa:latest
+      - name: Push SPA Image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
 
   # deploy:
   #   runs-on: ubuntu-latest
