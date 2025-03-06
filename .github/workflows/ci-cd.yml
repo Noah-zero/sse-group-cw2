@@ -65,9 +65,11 @@ jobs:
       - name: Run Chat tests
         working-directory: ./chat
         env:
-          PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/chat  # 关键！同时包含根目录和 chat 目录
+          PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/chat
         run: pytest tests/ -v
 
       - name: Run SPA tests
         working-directory: ./spa
+        env:
+          PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/spa
         run: pytest tests/ -v
