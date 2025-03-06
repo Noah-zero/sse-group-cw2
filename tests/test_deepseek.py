@@ -49,7 +49,7 @@ def fake_jwt_decode(token, secret, algorithms):
 
 
 @pytest.fixture
-def client_deepseek(monkeypatch):
+def client_deepseek():
     deepseek_app.config["TESTING"] = True
     with deepseek_app.test_client() as client:
         yield client
