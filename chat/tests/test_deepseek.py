@@ -1,6 +1,6 @@
 import pytest
-from deepseek import app as deepseek_app
-from conftest import (
+from chat.deepseek import app as deepseek_app
+from chat.tests.conftest import (
     DummySupabaseClient,
 )  # Import the DummySupabaseClient defined in conftest
 

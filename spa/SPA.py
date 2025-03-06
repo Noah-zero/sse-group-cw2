@@ -47,7 +47,6 @@ def register():
             500,
         )
     except Exception as e:
-        # 如果异常中包含 "JSONDecodeError"，返回 400 错误码和错误提示
         if "JSONDecodeError" in str(e):
             return jsonify({"error": "Invalid JSON format"}), 400
         return jsonify({"error": "Unexpected error", "details": str(e)}), 500

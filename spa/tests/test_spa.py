@@ -1,6 +1,6 @@
 import json
 import pytest
-from SPA import app as spa_app
+from spa.SPA import app as spa_app
 
 
 # Define a dummy object to simulate the response from requests

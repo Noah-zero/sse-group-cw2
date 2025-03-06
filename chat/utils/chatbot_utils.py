@@ -1,6 +1,5 @@
 # utils/chatbot_utils.py
 import psutil
-import datetime
 
 
 class ChatBot:

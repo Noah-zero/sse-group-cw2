@@ -1,6 +1,6 @@
 # utils/auth_utils.py
 import jwt
-from flask import request, jsonify
+from flask import request
 
 
 def get_decoded_token(secret_key):
