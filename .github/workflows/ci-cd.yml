@@ -39,12 +39,12 @@ jobs:
           author_email: 'github-actions@github.com'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Install packages
         run: pip install -r requirements.txt && pip install pytest
       - name: Run pytest
         run: |
-          pytest   
+          python -m pytest   
 
   #     - name: Set up Docker Buildx
   #       uses: docker/setup-buildx-action@v2
