@@ -65,6 +65,7 @@ class DummyOpenAIClient:
                 class MockResponse:
                     def __init__(self):
                         self.choices = [{"message": {"content": "Mocked response"}}]
+
                 return MockResponse()
 
             @staticmethod
@@ -73,6 +74,7 @@ class DummyOpenAIClient:
                 def mock_stream():
                     yield {"choices": [{"delta": {"content": "Mocked"}}]}
                     yield {"choices": [{"delta": {"content": " response"}}]}
+
                 return mock_stream()
 
 

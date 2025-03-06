@@ -26,7 +26,9 @@ def patch_deepseek_dependencies(monkeypatch):
     # Replace deepseek.supabase_client with an instance of DummySupabaseClient
     monkeypatch.setattr("chat.deepseek.supabase_client", DummySupabaseClient())
     # Replace deepseek.OpenAI with an instance of DummyOpenAIClient
-    monkeypatch.setattr("chat.deepseek.OpenAI", lambda *args, **kwargs: DummyOpenAIClient())
+    monkeypatch.setattr(
+        "chat.deepseek.OpenAI", lambda *args, **kwargs: DummyOpenAIClient()
+    )
 
 
 def test_start_chat_success(client_deepseek):
@@ -71,21 +73,24 @@ def test_send_message_streaming(client_deepseek, monkeypatch):
 
     monkeypatch.setattr(
         "chat.deepseek.ChatBot.chat",
-        lambda self, conversation, stream: mock_streaming_chat() if stream else "Mocked response"
+        lambda self, conversation, stream: (
+            mock_streaming_chat() if stream else "Mocked response"
+        ),
     )
 
     token = "Bearer dummy_token"
     response = client_deepseek.post(
         "/send_message",
         headers={"Authorization": token},
-        json={"message": "Hello", "chat_name": "Test Chat"}
+        json={"message": "Hello", "chat_name": "Test Chat"},
     )
-    
+
     assert response.status_code == 200
-    assert b"Mocked response" in b''.join(response.response)
+    assert b"Mocked response" in b"".join(response.response)
 
 
 def test_client_initialization():
     from chat.deepseek import client_xunfei
+
     assert client_xunfei.api_key == os.environ.get("CLIENT_XUNFEI_API_KEY")
     assert client_xunfei.base_url == os.environ.get("CLIENT_XUNFEI_BASE_URL")
