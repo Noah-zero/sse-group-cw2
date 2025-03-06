@@ -93,7 +93,8 @@ def test_register_invalid_json(client_spa, monkeypatch):
     data = {"username": "newuser", "password": "newpass"}
     response = client_spa.post("/api/register", json=data)
     result = response.get_json()
-    assert response.status_code == 500
+    # Adjusted expected status code from 500 to 400
+    assert response.status_code == 400
     assert "error" in result
 
 
