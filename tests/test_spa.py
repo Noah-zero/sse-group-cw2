@@ -49,4 +49,26 @@ def test_login_service_unreachable(client_spa, monkeypatch):
     assert response.status_code == 500
     assert "error" in result
 
+def test_start_chat_missing_token(client_spa):
+    response = client_spa.post("/api/start_chat", json={"chat_name": "Test Chat"})
+    result = response.get_json()
+    assert response.status_code == 401
+    assert "error" in result
 
+def test_chat_list_missing_token(client_spa):
+    response = client_spa.get("/api/chat_list")
+    result = response.get_json()
+    assert response.status_code == 401
+    assert "error" in result
+
+def test_chat_history_missing_token(client_spa):
+    response = client_spa.get("/api/chat_history?chat_name=TestChat")
+    result = response.get_json()
+    assert response.status_code == 401
+    assert "error" in result
+
+def test_send_message_missing_token(client_spa):
+    response = client_spa.post("/api/send_message", json={"message": "Hello"})
+    result = response.get_json()
+    assert response.status_code == 401
+    assert "error" in result
