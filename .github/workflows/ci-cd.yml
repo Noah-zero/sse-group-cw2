@@ -1,0 +1,80 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install Black
+        run: pip install black
+
+      - name: Auto format code with Black
+        run: |
+          black .
+          git diff
+
+      - name: Commit formatted code if needed
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: '.'
+          message: 'Automatically format code with Black'
+          author_name: 'github-actions'
+          author_email: 'github-actions@github.com'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
+
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v2
+
+  #     - name: Login to DockerHub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+  #     - name: Build Chat Image
+  #       run: |
+  #         docker build -f Dockerfile.chat -t your_dockerhub_username/chat:latest .
+
+  #     - name: Build SPA Image
+  #       run: |
+  #         docker build -f Dockerfile.spa -t your_dockerhub_username/spa:latest .
+
+  #     - name: Push Chat Image
+  #       run: |
+  #         docker push your_dockerhub_username/chat:latest
+
+  #     - name: Push SPA Image
+  #       run: |
+  #         docker push your_dockerhub_username/spa:latest
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     - name: SSH Deploy
+  #       uses: appleboy/ssh-action@v0.1.5
+  #       with:
+  #         host: ${{ secrets.SERVER_HOST }}
+  #         username: ${{ secrets.SERVER_USER }}
+  #         key: ${{ secrets.SERVER_SSH_KEY }}
+  #         script: |
+  #           cd /path/to/your/deployment/directory
+  #           # 拉取最新代码或镜像，更新 docker-compose 文件中的镜像标签等
+  #           docker-compose pull
+  #           docker-compose up -d --build --remove-orphans

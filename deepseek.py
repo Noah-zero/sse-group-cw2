@@ -1,8 +1,8 @@
-from dotenv import load_dotenv
 from utils.chatbot_utils import ChatBot, is_system_under_high_load, combine_message
 from utils.db_utils import check_chat_exists, create_chat, get_chat_history_list, get_conversation, update_database
 from utils.auth_utils import get_user_id_from_token, get_decoded_token
 from flask import Flask, request, jsonify, Response
+from dotenv import load_dotenv
 from openai import OpenAI
 import jwt
 from supabase import create_client
@@ -168,7 +168,6 @@ def send_message():
         return jsonify({"message": "Invalid token"}), 401
     except ValueError as e:
         return jsonify({"message": str(e)}), 401
-
 
 
 if __name__ == '__main__':

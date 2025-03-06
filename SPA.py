@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, jsonify, Response
 import requests
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -138,4 +141,4 @@ def send_message():
         return jsonify({"error": "Chat service unreachable", "details": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(port=5001)
