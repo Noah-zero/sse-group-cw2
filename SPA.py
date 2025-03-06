@@ -23,6 +23,8 @@ def login():
         return jsonify({"error": "Authentication service unreachable", "details": str(e)}), 500
     except requests.exceptions.JSONDecodeError:
         return jsonify({"error": "Invalid JSON response from authentication service"}), 500
+    except Exception as e:
+        return jsonify({"error": "Unexpected error", "details": str(e)}), 500
 
 
 @app.route('/api/register', methods=['POST'])
