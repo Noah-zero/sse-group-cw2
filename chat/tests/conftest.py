@@ -4,9 +4,8 @@ import os
 os.environ.setdefault("SUPABASE_URL", "http://dummy-supabase-url")
 os.environ.setdefault("SUPABASE_KEY", "dummy_supabase_key")
 os.environ.setdefault("SECRET_KEY", "dummy_secret")
+os.environ.setdefault("CLIENT_XUNFEI_API_KEY", "dummy_xunfei_key")
 os.environ.setdefault("CLIENT_XUNFEI_BASE_URL", "http://dummy-xunfei-api")
-os.environ.setdefault("CLIENT_XUNFEI_API_KEY", "dummy_xunfei_key_1")
-
 
 # Define dummy Supabase classes to simulate Supabase responses without making real API calls
 
@@ -26,9 +25,11 @@ class DummySupabaseTable:
 
     def execute(self):
         # When filtering by "user_id", return simulated data
-        return DummySupabaseResponse(
-            [{"id": 1, "name": "Test Chat", "messages": {"messages": ["Hello", "Hi"]}}]
-        )
+        if hasattr(self, "filter_key") and self.filter_key == "user_id":
+            return DummySupabaseResponse(
+                [{"id": 1, "name": "Test Chat", "messages": {"messages": []}}]
+            )
+        return DummySupabaseResponse([])
 
     def update(self, data):
         self.updated_data = data
@@ -52,28 +53,6 @@ class DummySupabaseClient:
 # Define a dummy create_client function that always returns a DummySupabaseClient
 def dummy_create_client(supabase_url, supabase_key, options=None):
     return DummySupabaseClient()
-
-
-class DummyOpenAIClient:
-    class chat:
-        class completions:
-            @staticmethod
-            def create(*args, **kwargs):
-                # 模拟正常响应
-                class MockResponse:
-                    def __init__(self):
-                        self.choices = [{"message": {"content": "Mocked response"}}]
-
-                return MockResponse()
-
-            @staticmethod
-            def create_streaming(*args, **kwargs):
-                # 模拟流式响应（生成器）
-                def mock_stream():
-                    yield {"choices": [{"delta": {"content": "Mocked"}}]}
-                    yield {"choices": [{"delta": {"content": " response"}}]}
-
-                return mock_stream()
 
 
 # Override the create_client function in the low-level supabase module

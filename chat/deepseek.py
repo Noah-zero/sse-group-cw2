@@ -23,8 +23,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dummy_secret")
 
 supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# create DeepSeek clients
+CLIENT_XUNFEI_API_KEY = os.environ.get("CLIENT_XUNFEI_API_KEY", "dummy_xunfei_key")
 CLIENT_XUNFEI_BASE_URL = os.environ.get("CLIENT_XUNFEI_BASE_URL")
-CLIENT_XUNFEI_API_KEY = os.environ.get("CLIENT_XUNFEI_API_KEY")
 client_xunfei = OpenAI(api_key=CLIENT_XUNFEI_API_KEY, base_url=CLIENT_XUNFEI_BASE_URL)
 
 
