@@ -62,11 +62,11 @@ jobs:
       - name: Install pytest
         run: pip install pytest
 
-      - name: Run Chat tests
-        working-directory: ./chat
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: pytest tests/ -v
+    - name: Run Chat tests
+      working-directory: ./chat
+      env:
+        PYTHONPATH: ${{ github.workspace }}/chat
+      run: pytest tests/ -v
 
       - name: Run SPA tests
         working-directory: ./spa

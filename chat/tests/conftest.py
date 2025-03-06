@@ -68,4 +68,4 @@ import supabase
 supabase.create_client = dummy_create_client
 
 # Now import deepseek so that it uses the dummy environment variables and dummy client
-from .. import deepseek
+from ..deepseek import *
