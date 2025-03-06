@@ -12,9 +12,11 @@ on:
       - main
 
 jobs:
+  python-formatting:
+    runs-on: ubuntu-latest
+    steps:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -39,8 +41,8 @@ jobs:
           author_name: 'github-actions'
           author_email: 'github-actions@github.com'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
-
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+             
       - name: Run pytest
         run: |
           pytest   
