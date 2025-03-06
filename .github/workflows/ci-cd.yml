@@ -63,9 +63,9 @@ jobs:
         run: pip install pytest
 
       - name: Run Chat tests
-        working-directory: ./chat  # 切换到 chat 目录运行测试
+        working-directory: ./chat
         run: pytest tests/ -v
 
       - name: Run SPA tests
-        working-directory: ./spa   # 切换到 spa 目录运行测试
+        working-directory: ./spa
         run: pytest tests/ -v
