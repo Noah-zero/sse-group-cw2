@@ -39,7 +39,11 @@ jobs:
           author_name: 'github-actions'
           author_email: 'github-actions@github.com'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
+
+      - name: Run pytest
+        run: |
+          pytest   
 
   #     - name: Set up Docker Buildx
   #       uses: docker/setup-buildx-action@v2
