@@ -1,12 +1,12 @@
-from utils.chatbot_utils import ChatBot, is_system_under_high_load, combine_message
-from utils.db_utils import (
+from .utils.chatbot_utils import ChatBot, is_system_under_high_load, combine_message
+from .utils.db_utils import (
     check_chat_exists,
     create_chat,
     get_chat_history_list,
     get_conversation,
     update_database,
 )
-from utils.auth_utils import get_user_id_from_token, get_decoded_token
+from .utils.auth_utils import get_user_id_from_token, get_decoded_token
 from flask import Flask, request, jsonify, Response
 from openai import OpenAI
 import jwt
