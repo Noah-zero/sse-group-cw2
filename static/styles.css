@@ -1,0 +1,222 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1b1b1b, #3a1c71);
+    color: white;
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* 💬 chat windows */
+#chat-container {
+    background: none; /* 移除淡白色背景 */
+    padding: 20px;
+    width: 60%;
+    height: 75vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 🗨️ chat box */
+#chat-box {
+    flex-grow: 1;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    max-height: 80%;
+    min-height: 400px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* 🔄 chat bubble styles */
+.chat-message {
+    padding: 12px 15px;
+    border-radius: 12px;
+    margin: 5px 0;
+    max-width: 70%;
+    font-size: 16px;
+    word-wrap: break-word;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+}
+
+/* 🟢 Deepseek's message */
+.chat-message.assistant {
+    background: rgba(255, 255, 255, 0.2);
+    text-align: left;
+    align-self: flex-start;
+    border-left: 4px solid #ff9800;
+}
+
+/* 🔵 user's message */
+.chat-message.user {
+    background: linear-gradient(135deg, rgba(0, 255, 200, 0.3), rgba(0, 255, 255, 0.5));
+    color: white;
+    text-align: left;
+    align-self: flex-end;
+    padding: 12px 15px;
+    border-radius: 12px;
+    max-width: 60%;
+    word-wrap: break-word;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 255, 200, 0.4);
+    border-right: 4px solid #00ffcc;
+}
+
+/* 🗨️ Text wraps automatically to ensure that it does not overflow */
+.chat-message p {
+    margin: 0;
+    padding: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ✨ input box */
+input[type="text"],
+input[type="password"] {
+    width: 220px;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    transition: 0.3s;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    font-family: 'Poppins', sans-serif;
+}
+
+/* 🎆 cyberpunk focus effect */
+input[type="text"]:focus,
+input[type="password"]:focus {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 15px #ff00ff, 0 0 25px #7700ff;
+    border: 1px solid #ff00ff;
+}
+
+/* 🏴‍☠️ Make the Placeholder of the input box cooler */
+input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+    font-size: 14px;
+}
+
+/* 🔘 send & return buttom */
+button {
+    width: 120px;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #ff00cc, #3333ff);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 5px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+button:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+}
+
+/* 📝 Overall layout of chat input box */
+#message-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* 💬 Maximize input box filling */
+#message {
+    flex-grow: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 16px;
+    text-align: left;
+    transition: 0.3s;
+    width: 100%;
+}
+
+/* 📌 Make the button width fixed */
+#message-container button {
+    width: 120px;
+    flex-shrink: 0;
+}
+
+/* 🔹 History Record List */
+#history-list {
+    list-style: none;
+    padding: 0;
+}
+
+#history-list li a {
+    display: inline-block;
+    color: #ffffff; 
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: 0.3s;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8); 
+}
+
+#history-list li a:hover {
+    color: #00ffff; 
+    text-shadow: 0 0 15px rgba(0, 255, 255, 1), 0 0 30px rgba(0, 255, 255, 0.8);
+    transform: scale(1.1);
+}
+
+h2 {
+    font-size: 40px;
+    font-weight: bold;
+    color: #fff;
+    text-transform: uppercase;
+    text-shadow:
+        0 0 10px #ff00ff,
+        0 0 20px #ff00ff,
+        0 0 30px #ff00ff,
+        0 0 40px #7700ff,
+        0 0 50px #7700ff;
+    animation: flicker 1.5s infinite alternate;
+}
+
+/* 💡 Neon flashing effect */
+@keyframes flicker {
+    0% { opacity: 1; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
+    100% { opacity: 0.8; text-shadow: 0 0 15px #7700ff, 0 0 25px #7700ff; }
+}
+
+#title-bar {
+    width: 50%;
+    height: 5px;
+    background: linear-gradient(90deg, #ff00ff, #7700ff, #ff00ff);
+    box-shadow: 0 0 15px #ff00ff, 0 0 25px #7700ff;
+    margin: 10px auto;
+    animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 10px #ff00ff; }
+    100% { box-shadow: 0 0 20px #7700ff; }
+}

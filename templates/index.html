@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek Clone</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    
+</head>
+<body>
+    <!-- Login/Register interface -->
+    <div id="login-register-form">
+        <h2>DeepSeek Clone</h2>
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button onclick="loginUser()">Login</button>
+        <button onclick="registerUser()">Register</button>
+        <p id="error-message" style="color: red;"></p>
+    </div>
+
+    <!-- menu -->
+    <div id="selection-container" style="display:none;">
+        <h2>Welcome!</h2>
+        <button onclick="showChatNaming()">Start Chat</button>
+        <button onclick="fetchChatHistoryList()">History</button>
+        <button onclick="logoutUser()">Logout</button>
+    </div>
+
+    <!-- name new chat -->
+    <div id="chat-naming-container" style="display:none;">
+        <h2>Name Your Chat</h2>
+        <input type="text" id="chat-name" placeholder="Enter chat name..." required />
+        <button onclick="startChat()">Start</button>
+        <button onclick="goBack()">Return</button>
+    </div>
+
+    <!-- chat interface -->
+    <div id="chat-container" style="display:none;">
+        <h2 id="chat-title">Chat with DeepSeek</h2>
+        <div id="chat-box" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
+        <input type="text" id="message" placeholder="Enter message..." />
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="returnToSelection()">Return</button>
+    </div>
+
+    <!-- historical chat -->
+    <div id="history-container" style="display:none;">
+        <h2>Chat History</h2>
+        <ul id="history-list"></ul>
+        <button onclick="returnToSelection()">Return</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
