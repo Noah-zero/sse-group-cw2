@@ -26,12 +26,9 @@ class DummySupabaseTable:
 
     def execute(self):
         # When filtering by "user_id", return simulated data
-        return DummySupabaseResponse([{
-            "id": 1,
-            "name": "Test Chat",
-            "messages": {"messages": ["Hello", "Hi"]}
-        }])
-
+        return DummySupabaseResponse(
+            [{"id": 1, "name": "Test Chat", "messages": {"messages": ["Hello", "Hi"]}}]
+        )
 
     def update(self, data):
         self.updated_data = data
