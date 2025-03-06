@@ -4,6 +4,7 @@ from chat.deepseek import app as deepseek_app
 from chat.tests.conftest import (
     DummySupabaseClient,
     DummyOpenAIClient,
+    DummySupabaseResponse
 )  # Import the DummySupabaseClient defined in conftest
 
 
@@ -68,25 +69,32 @@ def test_chat_history_missing_chat_name(client_deepseek):
 
 
 def test_send_message_streaming(client_deepseek, monkeypatch):
+    def mock_get_conversation(supabase_client, user_id, chat_name):
+        return DummySupabaseResponse([{
+            "id": 1,
+            "name": "Test Chat",
+            "messages": {"messages": ["Hello", "Hi"]}
+        }])
+
+    monkeypatch.setattr("chat.deepseek.get_conversation", mock_get_conversation)
+
     def mock_streaming_chat(*args, **kwargs):
         return DummyOpenAIClient.chat.completions.create_streaming()
 
     monkeypatch.setattr(
         "chat.deepseek.ChatBot.chat",
-        lambda self, conversation, stream: (
-            mock_streaming_chat() if stream else "Mocked response"
-        ),
+        lambda self, conversation, stream: mock_streaming_chat() if stream else "Mocked response"
     )
 
     token = "Bearer dummy_token"
     response = client_deepseek.post(
         "/send_message",
         headers={"Authorization": token},
-        json={"message": "Hello", "chat_name": "Test Chat"},
+        json={"message": "Hello", "chat_name": "Test Chat"}
     )
-
+    
     assert response.status_code == 200
-    assert b"Mocked response" in b"".join(response.response)
+    assert b"Mocked response" in b''.join(response.response)
 
 
 def test_client_initialization():

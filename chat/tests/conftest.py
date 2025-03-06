@@ -26,11 +26,12 @@ class DummySupabaseTable:
 
     def execute(self):
         # When filtering by "user_id", return simulated data
-        if hasattr(self, "filter_key") and self.filter_key == "user_id":
-            return DummySupabaseResponse(
-                [{"id": 1, "name": "Test Chat", "messages": {"messages": []}}]
-            )
-        return DummySupabaseResponse([])
+        return DummySupabaseResponse([{
+            "id": 1,
+            "name": "Test Chat",
+            "messages": {"messages": ["Hello", "Hi"]}
+        }])
+
 
     def update(self, data):
         self.updated_data = data
