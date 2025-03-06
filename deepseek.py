@@ -8,7 +8,6 @@ from utils.db_utils import (
 )
 from utils.auth_utils import get_user_id_from_token, get_decoded_token
 from flask import Flask, request, jsonify, Response
-from dotenv import load_dotenv
 from openai import OpenAI
 import jwt
 from supabase import create_client
@@ -16,8 +15,6 @@ import random
 import os
 
 app = Flask(__name__)
-
-load_dotenv()
 
 # Supabase connection config
 # database already exists
