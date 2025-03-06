@@ -1,10 +1,9 @@
 from dotenv import load_dotenv
 from utils.chatbot_utils import ChatBot, is_system_under_high_load, combine_message
 from utils.db_utils import check_chat_exists, create_chat, get_chat_history_list, get_conversation, update_database
+from utils.auth_utils import get_user_id_from_token, get_decoded_token
 from flask import Flask, request, jsonify, Response
 from openai import OpenAI
-import psutil
-import datetime
 import jwt
 from supabase import create_client
 import random
@@ -48,15 +47,8 @@ lt = [client_xunfei, client_xunfei1]
 @app.route('/start_chat', methods=['POST'])
 def start_chat():
     """ Handle the request forwarded by the API Gateway to create a new chat """
-    token = request.headers.get('Authorization')
-    if not token:
-        return jsonify({"message": "Authorization token is missing"}), 401
-
     try:
-        # Decode JWT to obtain user information
-        decoded_token = jwt.decode(token.split(" ")[1], SECRET_KEY, algorithms=["HS256"])
-        user_id = decoded_token['user_id']
-
+        user_id = get_user_id_from_token(SECRET_KEY)
         data = request.get_json()
         if not data or 'chat_name' not in data:
             return jsonify({"message": "Invalid request, 'chat_name' is required"}), 400
@@ -86,15 +78,8 @@ def start_chat():
 @app.route('/chat_list', methods=['GET'])
 def chat_list():
     """ Handle the request forwarded by the API Gateway to retrieve the chat history list """
-    token = request.headers.get('Authorization')
-    if not token:
-        return jsonify({"message": "Authorization token is missing"}), 401
-
     try:
-        # Decode JWT to obtain user information
-        decoded_token = jwt.decode(token.split(" ")[1], SECRET_KEY, algorithms=["HS256"])
-        user_id = decoded_token['user_id']
-
+        user_id = get_user_id_from_token(SECRET_KEY)
         # Retrieve the chat history list for the user
         response = get_chat_history_list(supabase_client, user_id)
 
@@ -112,22 +97,14 @@ def chat_list():
 @app.route('/chat_history', methods=['GET'])
 def chat_history():
     """Handle the /chat_history request forwarded by the API Gateway to fetch a specific chat history."""
-    try:
-        # Extract the token from the Authorization header (expected format: "Bearer <token>")
-        auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            return jsonify({"message": "Authorization token is missing"}), 401
-
-        token = auth_header.split(" ")[1]
+    try:        
+        decoded_token = get_decoded_token(SECRET_KEY)
+        user_id = decoded_token['user_id']
         chat_name = request.args.get('chat_name', '')  # Get chat_name from query parameters
 
         # Check if chat_name is provided
         if not chat_name:
             return jsonify({"message": "Chat name is required"}), 400
-
-        # Decode JWT to retrieve user information
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        user_id = decoded_token['user_id']
 
         # Query the database for the user's specific chat history
         conversation = get_chat_history_list(supabase_client, user_id, chat_name)
@@ -148,21 +125,15 @@ def chat_history():
 def send_message():
     """Handle the /send_message request to send a message to deepseek."""
     try:
-        auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            return jsonify({"message": "Authorization token is missing"}), 401
+        decoded_token = get_decoded_token(SECRET_KEY)
+        user_id = decoded_token['user_id']
 
-        token = auth_header.split(" ")[1]
         data = request.get_json()
         message = data['message']
         chat_name = data.get("chat_name", "Default Chat")
 
-        # Decode JWT to retrieve user information
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        user_id = decoded_token['user_id']
-
         # Check if the chat history exists for the user and chat_name
-        conversation = check_chat_exists(supabase_client, user_id, chat_name)
+        conversation = get_conversation(supabase_client, user_id, chat_name)
 
         if not conversation.data:
             return jsonify({"message": "Chat not found"}), 404
