@@ -11,7 +11,6 @@ from flask import Flask, request, jsonify, Response
 from openai import OpenAI
 import jwt
 from supabase import create_client
-import random
 import os
 
 app = Flask(__name__)
@@ -24,20 +23,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dummy_secret")
 
 supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-
-CLIENT_XUNFEI1_API_KEY = os.environ.get("CLIENT_XUNFEI1_API_KEY", "dummy_xunfei_key")
 CLIENT_XUNFEI_BASE_URL = os.environ.get("CLIENT_XUNFEI_BASE_URL")
-
-CLIENT_XUNFEI2_API_KEY = os.environ.get("CLIENT_XUNFEI2_API_KEY", "dummy_xunfei_key1")
-CLIENT_XUNFEI_BASE_URL = os.environ.get("CLIENT_XUNFEI_BASE_URL")
-
-
-# create DeepSeek clients
-client_xunfei = OpenAI(api_key=CLIENT_XUNFEI1_API_KEY, base_url=CLIENT_XUNFEI_BASE_URL)
-
-client_xunfei1 = OpenAI(api_key=CLIENT_XUNFEI2_API_KEY, base_url=CLIENT_XUNFEI_BASE_URL)
-
-lt = [client_xunfei, client_xunfei1]
+CLIENT_XUNFEI_API_KEY = os.environ.get("CLIENT_XUNFEI_API_KEY")
+client_xunfei = OpenAI(api_key=CLIENT_XUNFEI_API_KEY, base_url=CLIENT_XUNFEI_BASE_URL)
 
 
 # start chat
@@ -146,8 +134,7 @@ def send_message():
         updated_messages = conversation.data[0]["messages"]
         conversation_history = combine_message(message, updated_messages)
 
-        client1 = random.choice(lt)
-        chatbot = ChatBot(client1)
+        chatbot = ChatBot(client_xunfei)
 
         # Determine whether to use a streaming response based on system load.
         if is_system_under_high_load():
