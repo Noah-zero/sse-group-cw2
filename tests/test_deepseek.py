@@ -50,13 +50,6 @@ def fake_jwt_decode(token, secret, algorithms):
 
 @pytest.fixture
 def client_deepseek(monkeypatch):
-    # Set dummy environment variables
-    monkeypatch.setenv("SECRET_KEY", "dummy_secret")
-    monkeypatch.setenv("SUPABASE_URL", "http://dummy-supabase-url")
-    monkeypatch.setenv("SUPABASE_KEY", "dummy_supabase_key")
-    monkeypatch.setenv("CLIENT_XUNFEI1_API_KEY", "dummy_xunfei_key_1")
-    monkeypatch.setenv("CLIENT_XUNFEI2_API_KEY", "dummy_xunfei_key_2")
-    monkeypatch.setenv("CLIENT_XUNFEI_BASE_URL", "http://dummy-xunfei-api")
     deepseek_app.config["TESTING"] = True
     with deepseek_app.test_client() as client:
         yield client

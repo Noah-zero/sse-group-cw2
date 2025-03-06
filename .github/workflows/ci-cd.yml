@@ -42,9 +42,15 @@ jobs:
 
       - name: Install packages
         run: pip install -r requirements.txt && pip install pytest
-      - name: Run pytest
+      - name: Run pytest with dummy environment variables
         run: |
-          python -m pytest   
+          export SUPABASE_URL="http://dummy-supabase-url"
+          export SUPABASE_KEY="dummy_supabase_key"
+          export SECRET_KEY="dummy_secret"
+          export CLIENT_XUNFEI1_API_KEY="dummy_xunfei_key_1"
+          export CLIENT_XUNFEI2_API_KEY="dummy_xunfei_key_2"
+          export CLIENT_XUNFEI_BASE_URL="http://dummy-xunfei-api"
+          python -m pytest
 
   #     - name: Set up Docker Buildx
   #       uses: docker/setup-buildx-action@v2
