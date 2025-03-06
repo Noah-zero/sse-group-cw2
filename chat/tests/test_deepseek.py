@@ -20,9 +20,9 @@ def client_deepseek():
 @pytest.fixture(autouse=True)
 def patch_deepseek_dependencies(monkeypatch):
     # Replace deepseek.jwt.decode with our fake_jwt_decode to bypass token checks
-    monkeypatch.setattr("deepseek.jwt.decode", fake_jwt_decode)
+    monkeypatch.setattr("chat.deepseek.jwt.decode", fake_jwt_decode)
     # Replace deepseek.supabase_client with an instance of DummySupabaseClient
-    monkeypatch.setattr("deepseek.supabase_client", DummySupabaseClient())
+    monkeypatch.setattr("chat.deepseek.supabase_client", DummySupabaseClient())
 
 
 def test_start_chat_success(client_deepseek):
