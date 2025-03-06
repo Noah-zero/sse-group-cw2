@@ -166,6 +166,9 @@ def send_message():
         return jsonify({"message": "Token expired"}), 401
     except jwt.InvalidTokenError:
         return jsonify({"message": "Invalid token"}), 401
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 401
+
 
 
 if __name__ == '__main__':
