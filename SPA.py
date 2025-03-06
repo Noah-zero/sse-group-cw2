@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response 
 import requests
 import os
 
@@ -46,11 +46,11 @@ def register():
             jsonify({"error": "Authentication service unreachable", "details": str(e)}),
             500,
         )
-    except requests.exceptions.JSONDecodeError:
-        return (
-            jsonify({"error": "Invalid JSON response from authentication service"}),
-            500,
-        )
+    except Exception as e:
+        # 如果异常中包含 "JSONDecodeError"，返回 400 错误码和错误提示
+        if "JSONDecodeError" in str(e):
+            return jsonify({"error": "Invalid JSON format"}), 400
+        return jsonify({"error": "Unexpected error", "details": str(e)}), 500
 
 
 @app.route("/api/start_chat", methods=["POST"])
