@@ -10,44 +10,57 @@ app = Flask(__name__)
 AUTH_SERVICE_URL = os.environ.get("AUTH_SERVICE_URL", "http://127.0.0.1:5000")
 CHAT_SERVICE_URL = os.environ.get("CHAT_SERVICE_URL", "http://127.0.0.1:5002")
 
-@app.route('/')
+
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@app.route('/api/login', methods=['POST'])
+@app.route("/api/login", methods=["POST"])
 def login():
-    """ Proxy user login request to the authentication service """
+    """Proxy user login request to the authentication service"""
     try:
         data = request.json
         response = requests.post(f"{AUTH_SERVICE_URL}/login", json=data)
         return jsonify(response.json()), response.status_code
     except requests.exceptions.RequestException as e:
-        return jsonify({"error": "Authentication service unreachable", "details": str(e)}), 500
+        return (
+            jsonify({"error": "Authentication service unreachable", "details": str(e)}),
+            500,
+        )
     except requests.exceptions.JSONDecodeError:
-        return jsonify({"error": "Invalid JSON response from authentication service"}), 500
+        return (
+            jsonify({"error": "Invalid JSON response from authentication service"}),
+            500,
+        )
     except Exception as e:
         return jsonify({"error": "Unexpected error", "details": str(e)}), 500
 
 
-@app.route('/api/register', methods=['POST'])
+@app.route("/api/register", methods=["POST"])
 def register():
-    """ Proxy user registration request to the authentication service """
+    """Proxy user registration request to the authentication service"""
     try:
         data = request.json
         response = requests.post(f"{AUTH_SERVICE_URL}/register", json=data)
         return jsonify(response.json()), response.status_code
     except requests.exceptions.RequestException as e:
-        return jsonify({"error": "Authentication service unreachable", "details": str(e)}), 500
+        return (
+            jsonify({"error": "Authentication service unreachable", "details": str(e)}),
+            500,
+        )
     except requests.exceptions.JSONDecodeError:
-        return jsonify({"error": "Invalid JSON response from authentication service"}), 500
+        return (
+            jsonify({"error": "Invalid JSON response from authentication service"}),
+            500,
+        )
 
 
-@app.route('/api/start_chat', methods=['POST'])
+@app.route("/api/start_chat", methods=["POST"])
 def start_chat():
-    """ Proxy chat initiation request to the chat service """
+    """Proxy chat initiation request to the chat service"""
     try:
-        token = request.headers.get('Authorization')  # Extract Authorization token
+        token = request.headers.get("Authorization")  # Extract Authorization token
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
 
@@ -55,35 +68,39 @@ def start_chat():
 
         headers = {
             "Authorization": token,  # Forward authentication token
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
-        response = requests.post(f"{CHAT_SERVICE_URL}/start_chat", json=data, headers=headers)  # Forward request to chat service
+        response = requests.post(
+            f"{CHAT_SERVICE_URL}/start_chat", json=data, headers=headers
+        )  # Forward request to chat service
         return jsonify(response.json()), response.status_code
 
     except requests.exceptions.RequestException as e:
         return jsonify({"error": "Chat service unreachable", "details": str(e)}), 500
     except requests.exceptions.JSONDecodeError:
         return jsonify({"error": "Invalid JSON response from chat service"}), 500
-    
+
 
 # get chat list
-@app.route('/api/chat_list', methods=['GET'])
+@app.route("/api/chat_list", methods=["GET"])
 def chat_list():
-    """ Proxy chat list request to the chat service """
+    """Proxy chat list request to the chat service"""
     try:
-        token = request.headers.get('Authorization')
+        token = request.headers.get("Authorization")
 
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
 
         headers = {
             "Authorization": token,  # Forward authentication token
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
-        response = requests.get(f"{CHAT_SERVICE_URL}/chat_list", headers=headers)  # Forward request to chat service
-        
+        response = requests.get(
+            f"{CHAT_SERVICE_URL}/chat_list", headers=headers
+        )  # Forward request to chat service
+
         return jsonify(response.json()), response.status_code
 
     except requests.exceptions.RequestException as e:
@@ -93,52 +110,60 @@ def chat_list():
 
 
 # get chat history
-@app.route('/api/chat_history', methods=['GET'])
+@app.route("/api/chat_history", methods=["GET"])
 def chat_history():
     """Forward the /api/chat_history request to the backend service."""
     try:
-        token = request.headers.get('Authorization')
+        token = request.headers.get("Authorization")
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
 
         # Get the chat_name from query parameters
-        chat_name = request.args.get('chat_name', '')
-        params = {'chat_name': chat_name}
+        chat_name = request.args.get("chat_name", "")
+        params = {"chat_name": chat_name}
 
         headers = {
             "Authorization": token,  # Forward the authentication token
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         # Forward the request to the backend service's /chat_history endpoint
-        response = requests.get(f"{CHAT_SERVICE_URL}/chat_history", headers=headers, params=params)
+        response = requests.get(
+            f"{CHAT_SERVICE_URL}/chat_history", headers=headers, params=params
+        )
         return jsonify(response.json()), response.status_code
 
     except requests.exceptions.RequestException as e:
         return jsonify({"error": "Chat service unreachable", "details": str(e)}), 500
 
 
-
-@app.route('/api/send_message', methods=['POST'])
+@app.route("/api/send_message", methods=["POST"])
 def send_message():
     """Forward the /send_message request to the backend service."""
     try:
-        token = request.headers.get('Authorization')
+        token = request.headers.get("Authorization")
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
 
         data = request.get_json()
         headers = {
             "Authorization": token,  # Forward the authentication token
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         # Forward the request to the backend service's /send_message endpoint
-        response = requests.post(f"{CHAT_SERVICE_URL}/send_message", headers=headers, json=data)
-        return Response(response.content, status=response.status_code, content_type=response.headers.get('Content-Type'))
+        response = requests.post(
+            f"{CHAT_SERVICE_URL}/send_message", headers=headers, json=data
+        )
+        return Response(
+            response.content,
+            status=response.status_code,
+            content_type=response.headers.get("Content-Type"),
+        )
 
     except requests.exceptions.RequestException as e:
         return jsonify({"error": "Chat service unreachable", "details": str(e)}), 500
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(port=5001)
