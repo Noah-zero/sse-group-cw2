@@ -142,7 +142,7 @@ jobs:
       
       - name: Run Integration Tests
         run: |
-          STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5001/health)
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://spa:5001/api/health)
           if [ "$STATUS" -ne 200 ]; then
             echo "Integration test failed: expected HTTP 200, got $STATUS"
             exit 1

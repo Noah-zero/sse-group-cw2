@@ -7,15 +7,15 @@ services:
       dockerfile: Dockerfile
     environment:
       - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
-      - CHAT_SERVICE_URL1=http://chat1:5002
-      - CHAT_SERVICE_URL2=http://chat2:5002
+      - CHAT_SERVICE_URL1=http://chat:5002
+      - CHAT_SERVICE_URL2=http://chat:5002
       - SECRET_KEY=${SECRET_KEY}
     ports:
       - "5001:5001" 
     networks:
       - backend
 
-  chat1:
+  chat:
     build:
       context: ./chat
       dockerfile: Dockerfile
@@ -29,21 +29,6 @@ services:
       - backend
     ports:
       - "5002:5002"
-
-  chat2:
-    build:
-      context: ./chat
-      dockerfile: Dockerfile
-    environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - CLIENT_XUNFEI_API_KEY=${CLIENT_XUNFEI_API_KEY}
-      - CLIENT_XUNFEI_BASE_URL=${CLIENT_XUNFEI_BASE_URL}
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-    networks:
-      - backend
-    ports:
-      - "5003:5002"
 
 networks:
   backend:
