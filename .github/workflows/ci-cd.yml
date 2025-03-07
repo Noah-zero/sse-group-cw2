@@ -100,10 +100,10 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest .
 
-      - name: Build Nginx Image
-        working-directory: ./nginx
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest .
+      # - name: Build Nginx Image
+      #   working-directory: ./nginx
+      #   run: |
+      #     docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest .
 
       - name: Push Chat Image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest
@@ -111,8 +111,8 @@ jobs:
       - name: Push SPA Image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
 
-      - name: Push Nginx Image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest
+      # - name: Push Nginx Image
+      #   run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest
   
   integration-test:
     needs: build
@@ -135,14 +135,14 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Start Integration Environment
-        run: docker-compose up -d
+        run: docker-compose up --scale chat=2
       
       - name: Wait for services to be ready
-        run: sleep 20
+        run: sleep 15
       
       - name: Run Integration Tests
         run: |
-          STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://localhost/health)
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5001/health)
           if [ "$STATUS" -ne 200 ]; then
             echo "Integration test failed: expected HTTP 200, got $STATUS"
             exit 1

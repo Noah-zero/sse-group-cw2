@@ -1,14 +1,49 @@
 version: "3.8"
 
 services:
-  nginx:
-    image: nginx:stable-alpine
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  spa:
+    build:
+      context: ./spa
+      dockerfile: Dockerfile
+    environment:
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - CHAT_SERVICE_URL1=http://chat1:5002
+      - CHAT_SERVICE_URL2=http://chat2:5003
+      - SECRET_KEY=${SECRET_KEY}
     ports:
-      - "80:80"
+      - "5001:5001" 
     networks:
       - backend
+
+  chat1:
+    build:
+      context: ./chat
+      dockerfile: Dockerfile
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - CLIENT_XUNFEI_API_KEY=${CLIENT_XUNFEI_API_KEY}
+      - CLIENT_XUNFEI_BASE_URL=${CLIENT_XUNFEI_BASE_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    networks:
+      - backend
+    ports:
+      - "5002:5002"
+
+  chat2:
+    build:
+      context: ./chat
+      dockerfile: Dockerfile
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - CLIENT_XUNFEI_API_KEY=${CLIENT_XUNFEI_API_KEY}
+      - CLIENT_XUNFEI_BASE_URL=${CLIENT_XUNFEI_BASE_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    networks:
+      - backend
+    ports:
+      - "5003:5003"
 
 networks:
   backend:

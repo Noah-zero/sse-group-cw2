@@ -1,16 +1,39 @@
 from flask import Flask, render_template, request, jsonify, Response
 import requests
 import os
+import random
 
 app = Flask(__name__)
 
+
 AUTH_SERVICE_URL = os.environ.get("AUTH_SERVICE_URL", "http://127.0.0.1:5000")
-CHAT_SERVICE_URL = os.environ.get("CHAT_SERVICE_URL", "http://127.0.0.1:5002")
+CHAT_SERVICE_URL1 = os.environ.get("CHAT_SERVICE_URL1", "http://127.0.0.1:5002")
+CHAT_SERVICE_URL2 = os.environ.get("CHAT_SERVICE_URL2", "http://127.0.0.1:5002")
+lt = [CHAT_SERVICE_URL1, CHAT_SERVICE_URL2]
 
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/api/health")
+def health():
+    try:
+        response = requests.post(f"{AUTH_SERVICE_URL}/login")
+        return jsonify(response.json()), response.status_code
+    except requests.exceptions.RequestException as e:
+        return (
+            jsonify({"error": "Authentication service unreachable", "details": str(e)}),
+            500,
+        )
+    except requests.exceptions.JSONDecodeError:
+        return (
+            jsonify({"error": "Invalid JSON response from authentication service"}),
+            500,
+        )
+    except Exception as e:
+        return jsonify({"error": "Unexpected error", "details": str(e)}), 500
 
 
 @app.route("/api/login", methods=["POST"])
@@ -55,6 +78,7 @@ def register():
 @app.route("/api/start_chat", methods=["POST"])
 def start_chat():
     """Proxy chat initiation request to the chat service"""
+    CHAT_SERVICE_URL = random.choice(lt)
     try:
         token = request.headers.get("Authorization")  # Extract Authorization token
         if not token:
@@ -82,6 +106,7 @@ def start_chat():
 @app.route("/api/chat_list", methods=["GET"])
 def chat_list():
     """Proxy chat list request to the chat service"""
+    CHAT_SERVICE_URL = random.choice(lt)
     try:
         token = request.headers.get("Authorization")
 
@@ -109,6 +134,7 @@ def chat_list():
 @app.route("/api/chat_history", methods=["GET"])
 def chat_history():
     """Forward the /api/chat_history request to the backend service."""
+    CHAT_SERVICE_URL = random.choice(lt)
     try:
         token = request.headers.get("Authorization")
         if not token:
@@ -136,6 +162,7 @@ def chat_history():
 @app.route("/api/send_message", methods=["POST"])
 def send_message():
     """Forward the /send_message request to the backend service."""
+    CHAT_SERVICE_URL = random.choice(lt)
     try:
         token = request.headers.get("Authorization")
         if not token:
