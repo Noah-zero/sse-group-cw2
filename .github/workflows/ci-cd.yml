@@ -163,8 +163,8 @@ jobs:
           app-name: core
           deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
           method: DOCKER_IMAGE
-          run: |
-            tsuru app deploy -i ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest -a core
+        run: |
+          tsuru app deploy -i ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest -a core
 
   # deploy-nginx:
   #   runs-on: ubuntu-latest
