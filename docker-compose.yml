@@ -1,72 +1,12 @@
 version: "3.8"
 
 services:
-  spa:
-    build:
-      context: ./spa
-      dockerfile: Dockerfile
-    environment:
-      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
-      - CHAT_SERVICE_URL=http://nginx/api/chat 
-      - SECRET_KEY=${SECRET_KEY}
-    ports:
-      - "5001:5001" 
-    networks:
-      - backend
-
-  chat1-sse2-cw-zcyy-web.default.svc.cluster.local:
-    build:
-      context: ./chat
-      dockerfile: Dockerfile
-    environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - CLIENT_XUNFEI_API_KEY=${CLIENT_XUNFEI_API_KEY_1}
-      - CLIENT_XUNFEI_BASE_URL=${CLIENT_XUNFEI_BASE_URL}
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-    networks:
-      - backend
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8888/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 120s
-    ports:
-      - "5002:8888"
-
-  chat2-sse2-cw-zcyy-web.default.svc.cluster.local:
-    build:
-      context: ./chat
-      dockerfile: Dockerfile
-    environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - CLIENT_XUNFEI_API_KEY=${CLIENT_XUNFEI_API_KEY_2}
-      - CLIENT_XUNFEI_BASE_URL=${CLIENT_XUNFEI_BASE_URL}
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-    networks:
-      - backend
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5002/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 120s
-    ports:
-      - "5003:8888"
-
   nginx:
     image: nginx:stable-alpine
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       - "80:80"
-    depends_on:
-      chat1-sse2-cw-zcyy-web.default.svc.cluster.local:
-        condition: service_healthy
-      chat2-sse2-cw-zcyy-web.default.svc.cluster.local:
-        condition: service_healthy
     networks:
       - backend
 

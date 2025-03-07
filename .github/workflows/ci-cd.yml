@@ -135,10 +135,10 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Start Integration Environment
-        run: docker-compose up -d --scale chat=2
+        run: docker-compose up -d
       
       - name: Wait for services to be ready
-        run: sleep 15
+        run: sleep 20
       
       - name: Run Integration Tests
         run: |
