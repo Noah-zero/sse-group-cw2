@@ -8,7 +8,7 @@ services:
     environment:
       - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
       - CHAT_SERVICE_URL1=http://chat1:5002
-      - CHAT_SERVICE_URL2=http://chat2:5003
+      - CHAT_SERVICE_URL2=http://chat2:5002
       - SECRET_KEY=${SECRET_KEY}
     ports:
       - "5001:5001" 
@@ -43,7 +43,7 @@ services:
     networks:
       - backend
     ports:
-      - "5003:5003"
+      - "5003:5002"
 
 networks:
   backend:
