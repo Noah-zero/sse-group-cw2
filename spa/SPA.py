@@ -2,13 +2,17 @@ from flask import Flask, render_template, request, jsonify, Response
 import requests
 import os
 import random
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
-
+load_dotenv()
 AUTH_SERVICE_URL = os.environ.get("AUTH_SERVICE_URL", "http://127.0.0.1:5000")
-CHAT_SERVICE_URL1 = os.environ.get("CHAT_SERVICE_URL1", "http://127.0.0.1:5002")
-CHAT_SERVICE_URL2 = os.environ.get("CHAT_SERVICE_URL2", "http://127.0.0.1:5002")
+# AUTH_SERVICE_URL = "https://gyya-sse2-users-service.impaas.uk/"
+# CHAT_SERVICE_URL1 = "http://127.0.0.1:5002"
+# CHAT_SERVICE_URL2 = "http://127.0.0.1:5002"
+CHAT_SERVICE_URL1 = os.environ.get("CHAT_SERVICE_URL1", "http://127.0.0.1:5002") 
+CHAT_SERVICE_URL2 = os.environ.get("CHAT_SERVICE_URL2", "http://127.0.0.1:5002") 
 lt = [CHAT_SERVICE_URL1, CHAT_SERVICE_URL2]
 
 
@@ -81,19 +85,14 @@ def start_chat():
     """Proxy chat initiation request to the chat service"""
     CHAT_SERVICE_URL = random.choice(lt)
     try:
-        token = request.headers.get("Authorization").split(" ")[
-            1
-        ]  # Extract Authorization token
+        token = request.headers.get("Authorization")
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
-
         data = request.json  # Get JSON data from the request
-
         headers = {
             "Authorization": token,  # Forward authentication token
             "Content-Type": "application/json",
         }
-
         response = requests.post(
             f"{CHAT_SERVICE_URL}/start_chat", json=data, headers=headers
         )  # Forward request to chat service
@@ -111,7 +110,7 @@ def chat_list():
     """Proxy chat list request to the chat service"""
     CHAT_SERVICE_URL = random.choice(lt)
     try:
-        token = request.headers.get("Authorization").split(" ")[1]
+        token = request.headers.get("Authorization")
 
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
@@ -124,7 +123,7 @@ def chat_list():
         response = requests.get(
             f"{CHAT_SERVICE_URL}/chat_list", headers=headers
         )  # Forward request to chat service
-
+        
         return jsonify(response.json()), response.status_code
 
     except requests.exceptions.RequestException as e:
@@ -139,14 +138,13 @@ def chat_history():
     """Forward the /api/chat_history request to the backend service."""
     CHAT_SERVICE_URL = random.choice(lt)
     try:
-        token = request.headers.get("Authorization").split(" ")[1]
+        token = request.headers.get("Authorization")
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
 
         # Get the chat_name from query parameters
         chat_name = request.args.get("chat_name", "")
         params = {"chat_name": chat_name}
-
         headers = {
             "Authorization": token,  # Forward the authentication token
             "Content-Type": "application/json",
@@ -167,7 +165,7 @@ def send_message():
     """Forward the /send_message request to the backend service."""
     CHAT_SERVICE_URL = random.choice(lt)
     try:
-        token = request.headers.get("Authorization").split(" ")[1]
+        token = request.headers.get("Authorization")
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
 
@@ -176,7 +174,6 @@ def send_message():
             "Authorization": token,  # Forward the authentication token
             "Content-Type": "application/json",
         }
-
         # Forward the request to the backend service's /send_message endpoint
         response = requests.post(
             f"{CHAT_SERVICE_URL}/send_message", headers=headers, json=data
@@ -192,4 +189,4 @@ def send_message():
 
 
 if __name__ == "__main__":
-    app.run(port=5001)
+    app.run(port=5001, debug=True)

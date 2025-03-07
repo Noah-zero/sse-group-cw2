@@ -13,6 +13,7 @@ import jwt
 from supabase import create_client
 import os
 
+
 app = Flask(__name__)
 
 # Supabase connection config
@@ -48,16 +49,14 @@ def start_chat():
 
         # Check if a chat with the same name already exists
         existing_chat = check_chat_exists(supabase_client, user_id, chat_name)
-
         if existing_chat.data:
             return (
                 jsonify({"message": "Chat already exists", "chat_name": chat_name}),
-                200,
+                409,
             )
 
         # **Create a new chat with no initial messages**
         create_chat(supabase_client, user_id, chat_name)
-
         return jsonify({"message": "Chat started", "chat_name": chat_name}), 200
 
     except jwt.ExpiredSignatureError:
@@ -97,14 +96,11 @@ def chat_history():
         chat_name = request.args.get(
             "chat_name", ""
         )  # Get chat_name from query parameters
-
         # Check if chat_name is provided
         if not chat_name:
             return jsonify({"message": "Chat name is required"}), 400
-
         # Query the database for the user's specific chat history
-        conversation = get_chat_history_list(supabase_client, user_id, chat_name)
-
+        conversation = get_conversation(supabase_client, user_id, chat_name)
         if conversation.data:
             messages = conversation.data[0].get("messages", {}).get("messages", [])
             return (
@@ -116,7 +112,7 @@ def chat_history():
 
     except Exception as e:
         print(f"Error in chat_history: {e}")  # Log the error
-        return jsonify({"message": "Internal Server Error"}), 500
+        # return jsonify({"message": "Internal Server Error", "error": str(e)}), 500
 
 
 # send message
@@ -126,14 +122,12 @@ def send_message():
     try:
         decoded_token = get_decoded_token(SECRET_KEY)
         user_id = decoded_token["user_id"]
-
         data = request.get_json()
         message = data["message"]
         chat_name = data.get("chat_name", "Default Chat")
 
         # Check if the chat history exists for the user and chat_name
         conversation = get_conversation(supabase_client, user_id, chat_name)
-
         if not conversation.data:
             return jsonify({"message": "Chat not found"}), 404
 

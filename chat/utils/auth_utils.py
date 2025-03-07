@@ -16,7 +16,6 @@ def get_decoded_token(secret_key):
         jwt.InvalidTokenError: If the token is invalid.
     """
     auth_header = request.headers.get("Authorization")
-
     # Expected format: "Bearer <token>"
     try:
         token = auth_header.split(" ")[1]
