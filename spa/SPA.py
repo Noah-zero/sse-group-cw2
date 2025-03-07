@@ -20,7 +20,7 @@ def index():
 @app.route("/api/health")
 def health():
     try:
-        response = requests.post(f"{AUTH_SERVICE_URL}/login")
+        response = requests.post(f"{AUTH_SERVICE_URL}/health")
         return jsonify(response.json()), response.status_code
     except requests.exceptions.RequestException as e:
         return (
