@@ -14,7 +14,7 @@ services:
     networks:
       - backend
 
-  chat1-web.default.svc.cluster.local:
+  chat1-sse2-cw-zcyy-web.default.svc.cluster.local:
     build:
       context: ./chat
       dockerfile: Dockerfile
@@ -35,7 +35,7 @@ services:
     ports:
       - "5002:8888"
 
-  chat2-web.default.svc.cluster.local:
+  chat2-sse2-cw-zcyy-web.default.svc.cluster.local:
     build:
       context: ./chat
       dockerfile: Dockerfile
@@ -63,9 +63,9 @@ services:
     ports:
       - "80:80"
     depends_on:
-      chat1-web.default.svc.cluster.local:
+      chat1-sse2-cw-zcyy-web.default.svc.cluster.local:
         condition: service_healthy
-      chat2-web.default.svc.cluster.local:
+      chat2-sse2-cw-zcyy-web.default.svc.cluster.local:
         condition: service_healthy
     networks:
       - backend
