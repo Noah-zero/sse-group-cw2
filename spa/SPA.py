@@ -81,7 +81,9 @@ def start_chat():
     """Proxy chat initiation request to the chat service"""
     CHAT_SERVICE_URL = random.choice(lt)
     try:
-        token = request.headers.get("Authorization").split(" ")[1]  # Extract Authorization token
+        token = request.headers.get("Authorization").split(" ")[
+            1
+        ]  # Extract Authorization token
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
 
