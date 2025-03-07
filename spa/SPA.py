@@ -81,7 +81,7 @@ def start_chat():
     """Proxy chat initiation request to the chat service"""
     CHAT_SERVICE_URL = random.choice(lt)
     try:
-        token = request.headers.get("Authorization")  # Extract Authorization token
+        token = request.headers.get("Authorization").split(" ")[1]  # Extract Authorization token
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
 
@@ -109,7 +109,7 @@ def chat_list():
     """Proxy chat list request to the chat service"""
     CHAT_SERVICE_URL = random.choice(lt)
     try:
-        token = request.headers.get("Authorization")
+        token = request.headers.get("Authorization").split(" ")[1]
 
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
@@ -137,7 +137,7 @@ def chat_history():
     """Forward the /api/chat_history request to the backend service."""
     CHAT_SERVICE_URL = random.choice(lt)
     try:
-        token = request.headers.get("Authorization")
+        token = request.headers.get("Authorization").split(" ")[1]
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
 
@@ -165,7 +165,7 @@ def send_message():
     """Forward the /send_message request to the backend service."""
     CHAT_SERVICE_URL = random.choice(lt)
     try:
-        token = request.headers.get("Authorization")
+        token = request.headers.get("Authorization").split(" ")[1]
         if not token:
             return jsonify({"error": "Authorization token is missing"}), 401
 
