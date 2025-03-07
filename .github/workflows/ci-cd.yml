@@ -150,7 +150,7 @@ jobs:
             echo "Integration test passed"
         
         - name: Stop Integration Environment
-          run: docker-compose -f integration-compose.yml down
+          run: docker-compose down
 
   # deploy:
   #   needs: build
