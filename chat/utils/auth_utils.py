@@ -1,6 +1,6 @@
 # utils/auth_utils.py
 import jwt
-from flask import request
+from flask import request, jsonify
 
 
 def get_decoded_token(secret_key):
@@ -17,7 +17,7 @@ def get_decoded_token(secret_key):
     """
     auth_header = request.headers.get("Authorization")
     if not auth_header:
-        raise ValueError("Authorization token is missing")
+        return jsonify({"message": "Error: Missing token"}), 401
 
     # Expected format: "Bearer <token>"
     try:
