@@ -7,9 +7,6 @@ import random
 app = Flask(__name__)
 
 AUTH_SERVICE_URL = os.environ.get("AUTH_SERVICE_URL", "http://127.0.0.1:5000")
-# AUTH_SERVICE_URL = "https://gyya-sse2-users-service.impaas.uk/"
-# CHAT_SERVICE_URL1 = "http://127.0.0.1:5002"
-# CHAT_SERVICE_URL2 = "http://127.0.0.1:5002"
 CHAT_SERVICE_URL1 = os.environ.get("CHAT_SERVICE_URL1", "http://127.0.0.1:5002")
 CHAT_SERVICE_URL2 = os.environ.get("CHAT_SERVICE_URL2", "http://127.0.0.1:5002")
 lt = [CHAT_SERVICE_URL1, CHAT_SERVICE_URL2]
