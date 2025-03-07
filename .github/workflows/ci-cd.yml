@@ -160,9 +160,12 @@ jobs:
         run: |
           curl -fsSL "https://tsuru.io/get" | bash
 
-      - name: Login to Tsuru
+      - name: Setup Tsuru Authentication
         run: |
-          tsuru login -a ${{ secrets.TSURU_HOST }} -u ${{ secrets.TSURU_USER }} -p ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
+          mkdir -p $HOME/.tsuru
+          echo "$TSURU_TOKEN" > $HOME/.tsuru/token
+        env:
+          TSURU_TOKEN: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
 
       - name: Deploy SPA App
         run: |
