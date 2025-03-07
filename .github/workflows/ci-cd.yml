@@ -165,7 +165,7 @@ jobs:
           mkdir -p $HOME/.tsuru
           echo "$TSURU_TOKEN" > $HOME/.tsuru/token
         env:
-          TSURU_TOKEN: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
+          TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
 
       - name: Set Tsuru target
         run: |
