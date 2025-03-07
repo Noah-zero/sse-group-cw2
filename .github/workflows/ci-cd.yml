@@ -135,7 +135,7 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Start Integration Environment
-        run: docker-compose up
+        run: docker-compose up -d
       
       - name: Wait for services to be ready
         run: sleep 15
