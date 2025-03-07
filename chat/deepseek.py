@@ -64,6 +64,8 @@ def start_chat():
         return jsonify({"message": "Token expired"}), 401
     except jwt.InvalidTokenError:
         return jsonify({"message": "Invalid token"}), 401
+    except AttributeError:
+        return jsonify({"message": "Error: Missing token"}), 401
     except Exception as e:
         return jsonify({"message": "Internal server error", "error": str(e)}), 500
 
@@ -83,6 +85,8 @@ def chat_list():
         return jsonify({"message": "Token expired"}), 401
     except jwt.InvalidTokenError:
         return jsonify({"message": "Invalid token"}), 401
+    except AttributeError:
+        return jsonify({"message": "Error: Missing token"}), 401
     except Exception as e:
         return jsonify({"message": "Internal server error", "error": str(e)}), 500
 
@@ -114,6 +118,8 @@ def chat_history():
         else:
             return jsonify({"messages": []}), 200
 
+    except AttributeError:
+        return jsonify({"message": "Error: Missing token"}), 401
     except Exception as e:
         print(f"Error in chat_history: {e}")  # Log the error
         return jsonify({"message": "Internal Server Error"}), 500
@@ -177,6 +183,8 @@ def send_message():
         return jsonify({"message": "Token expired"}), 401
     except jwt.InvalidTokenError:
         return jsonify({"message": "Invalid token"}), 401
+    except AttributeError:
+        return jsonify({"message": "Error: Missing token"}), 401
     except ValueError as e:
         return jsonify({"message": str(e)}), 401
 
