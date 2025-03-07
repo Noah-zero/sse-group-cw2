@@ -29,7 +29,7 @@ CLIENT_XUNFEI_BASE_URL = os.environ.get("CLIENT_XUNFEI_BASE_URL")
 client_xunfei = OpenAI(api_key=CLIENT_XUNFEI_API_KEY, base_url=CLIENT_XUNFEI_BASE_URL)
 
 
-@app.route('/health')
+@app.route("/health")
 def health():
     return jsonify({"status": "ok"}), 200
 
