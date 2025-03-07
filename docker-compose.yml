@@ -63,9 +63,9 @@ services:
     ports:
       - "80:80"
     depends_on:
-      chat1:
+      chat1-web.default.svc.cluster.local:
         condition: service_healthy
-      chat2:
+      chat2-web.default.svc.cluster.local:
         condition: service_healthy
     networks:
       - backend
