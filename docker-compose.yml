@@ -14,24 +14,47 @@ services:
     networks:
       - backend
 
-  chat:
+  chat1:
     build:
       context: ./chat
       dockerfile: Dockerfile
     environment:
       - SECRET_KEY=${SECRET_KEY}
-      - CLIENT_XUNFEI_API_KEY_1=${CLIENT_XUNFEI_API_KEY_1}
-      - CLIENT_XUNFEI_API_KEY_2=${CLIENT_XUNFEI_API_KEY_2}
+      - CLIENT_XUNFEI_API_KEY=${CLIENT_XUNFEI_API_KEY_1}
       - CLIENT_XUNFEI_BASE_URL=${CLIENT_XUNFEI_BASE_URL}
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
     networks:
       - backend
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:5002/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 60s
+    ports:
+      - "5002:5002"
+
+  chat2:
+    build:
+      context: ./chat
+      dockerfile: Dockerfile
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - CLIENT_XUNFEI_API_KEY=${CLIENT_XUNFEI_API_KEY_2}
+      - CLIENT_XUNFEI_BASE_URL=${CLIENT_XUNFEI_BASE_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5002/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    ports:
+      - "5003:5002"
 
   nginx:
     image: nginx:stable-alpine
@@ -40,7 +63,9 @@ services:
     ports:
       - "80:80"
     depends_on:
-      chat:
+      chat1:
+        condition: service_healthy
+      chat2:
         condition: service_healthy
     networks:
       - backend

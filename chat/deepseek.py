@@ -1,12 +1,12 @@
-from .utils.chatbot_utils import ChatBot, is_system_under_high_load, combine_message
-from .utils.db_utils import (
+from utils.chatbot_utils import ChatBot, is_system_under_high_load, combine_message
+from utils.db_utils import (
     check_chat_exists,
     create_chat,
     get_chat_history_list,
     get_conversation,
     update_database,
 )
-from .utils.auth_utils import get_user_id_from_token, get_decoded_token
+from utils.auth_utils import get_user_id_from_token, get_decoded_token
 from flask import Flask, request, jsonify, Response
 from openai import OpenAI
 import jwt
@@ -27,6 +27,11 @@ supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
 CLIENT_XUNFEI_API_KEY = os.environ.get("CLIENT_XUNFEI_API_KEY", "dummy_xunfei_key")
 CLIENT_XUNFEI_BASE_URL = os.environ.get("CLIENT_XUNFEI_BASE_URL")
 client_xunfei = OpenAI(api_key=CLIENT_XUNFEI_API_KEY, base_url=CLIENT_XUNFEI_BASE_URL)
+
+
+@app.route('/health')
+def health():
+    return jsonify({"status": "ok"}), 200
 
 
 # start chat
