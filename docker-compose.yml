@@ -27,8 +27,6 @@ services:
       - SUPABASE_KEY=${SUPABASE_KEY}
     networks:
       - backend
-    deploy:
-      replicas: 2 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
       interval: 30s
