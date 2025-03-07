@@ -19,8 +19,9 @@ def index():
 
 @app.route("/api/health")
 def health():
+    CHAT_SERVICE_URL = random.choice(lt)
     try:
-        response = requests.post(f"{AUTH_SERVICE_URL}/health")
+        response = requests.post(f"{CHAT_SERVICE_URL}/health")
         return jsonify(response.json()), response.status_code
     except requests.exceptions.RequestException as e:
         return (
