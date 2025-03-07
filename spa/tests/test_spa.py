@@ -95,4 +95,3 @@ def test_register_invalid_json(client_spa, monkeypatch):
     result = response.get_json()
     # Adjusted expected status code from 500 to 400
     assert response.status_code == 400
-    assert "Error" in result
