@@ -12,110 +12,110 @@ on:
       - main
 
 jobs:
-  # python-formatting:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v3
+  python-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: '3.12'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
 
-  #     - name: Install Black
-  #       run: pip install black
+      - name: Install Black
+        run: pip install black
 
-  #     - name: Auto format code with Black
-  #       run: |
-  #         black .
-  #         git diff
+      - name: Auto format code with Black
+        run: |
+          black .
+          git diff
 
-  #     - name: Commit formatted code if needed
-  #       uses: EndBug/add-and-commit@v9
-  #       with:
-  #         add: '.'
-  #         message: 'Automatically format code with Black'
-  #         author_name: 'github-actions'
-  #         author_email: 'github-actions@github.com'
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit formatted code if needed
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: '.'
+          message: 'Automatically format code with Black'
+          author_name: 'github-actions'
+          author_email: 'github-actions@github.com'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # unit-test:
-  #   needs: python-formatting
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  unit-test:
+    needs: python-formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup Python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: 3.12
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
 
-  #     - name: Install Chat dependencies
-  #       run: pip install -r chat/requirements.txt
+      - name: Install Chat dependencies
+        run: pip install -r chat/requirements.txt
 
-  #     - name: Install SPA dependencies
-  #       run: pip install -r spa/requirements.txt
+      - name: Install SPA dependencies
+        run: pip install -r spa/requirements.txt
 
-  #     - name: Install pytest
-  #       run: pip install pytest
+      - name: Install pytest
+        run: pip install pytest
 
-  #     - name: Run Chat tests
-  #       working-directory: ./chat
-  #       env:
-  #         PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/chat
-  #       run: pytest tests/ -v
+      - name: Run Chat tests
+        working-directory: ./chat
+        env:
+          PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/chat
+        run: pytest tests/ -v
 
-  #     - name: Run SPA tests
-  #       working-directory: ./spa
-  #       env:
-  #         PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/spa
-  #       run: pytest tests/ -v
+      - name: Run SPA tests
+        working-directory: ./spa
+        env:
+          PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/spa
+        run: pytest tests/ -v
 
-  # build:
-  #   needs: unit-test
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  build:
+    needs: unit-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-  #     - name: Login to DockerHub
-  #       uses: docker/login-action@v2
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-  #     - name: Build Chat Image
-  #       working-directory: ./chat
-  #       run: |
-  #         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest .
+      - name: Build Chat Image
+        working-directory: ./chat
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest .
 
-  #     - name: Build SPA Image
-  #       working-directory: ./spa
-  #       run: |
-  #         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest .
+      - name: Build SPA Image
+        working-directory: ./spa
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest .
 
-  #     # - name: Build Nginx Image
-  #     #   working-directory: ./nginx
-  #     #   run: |
-  #     #     docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest .
+      # - name: Build Nginx Image
+      #   working-directory: ./nginx
+      #   run: |
+      #     docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest .
 
-  #     - name: Push Chat Image
-  #       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest
+      - name: Push Chat Image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest
 
-  #     - name: Push SPA Image
-  #       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
+      - name: Push SPA Image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
 
-  #     # - name: Push Nginx Image
-  #     #   run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest
+      # - name: Push Nginx Image
+      #   run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest
   
   integration-test:
-    # needs: build
+    needs: build
     runs-on: ubuntu-latest
     env:
       AUTH_SERVICE_URL: ${{ secrets.AUTH_SERVICE_URL }}
