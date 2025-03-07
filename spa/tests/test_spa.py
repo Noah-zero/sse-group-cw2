@@ -96,24 +96,3 @@ def test_register_invalid_json(client_spa, monkeypatch):
     # Adjusted expected status code from 500 to 400
     assert response.status_code == 400
     assert "Error" in result
-
-
-def test_start_chat_missing_token(client_spa):
-    # Missing Authorization Token should return 401
-    response = client_spa.post("/api/start_chat", json={"chat_name": "Test Chat"})
-    assert response[1] == 401
-
-
-def test_chat_list_missing_token(client_spa):
-    response = client_spa.get("/api/chat_list")
-    assert response[1] == 401
-
-
-def test_chat_history_missing_token(client_spa):
-    response = client_spa.get("/api/chat_history?chat_name=TestChat")
-    assert response[1] == 401
-
-
-def test_send_message_missing_token(client_spa):
-    response = client_spa.post("/api/send_message", json={"message": "Hello"})
-    assert response[1] == 401

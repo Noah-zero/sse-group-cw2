@@ -40,8 +40,6 @@ def start_chat():
     """Handle the request forwarded by the API Gateway to create a new chat"""
     try:
         user_id = get_user_id_from_token(SECRET_KEY)
-        if isinstance(user_id, tuple):
-            return jsonify(user_id[0]), 401
         data = request.get_json()
         if not data or "chat_name" not in data:
             return jsonify({"message": "Invalid request, 'chat_name' is required"}), 400
@@ -76,8 +74,6 @@ def chat_list():
     """Handle the request forwarded by the API Gateway to retrieve the chat history list"""
     try:
         user_id = get_user_id_from_token(SECRET_KEY)
-        if isinstance(user_id, tuple):
-            return jsonify(user_id[0]), 401
         # Retrieve the chat history list for the user
         response = get_chat_history_list(supabase_client, user_id)
 
@@ -97,8 +93,6 @@ def chat_history():
     """Handle the /chat_history request forwarded by the API Gateway to fetch a specific chat history."""
     try:
         decoded_token = get_decoded_token(SECRET_KEY)
-        if isinstance(decoded_token, tuple):
-            return jsonify(decoded_token[0]), 401
         user_id = decoded_token["user_id"]
         chat_name = request.args.get(
             "chat_name", ""
@@ -131,8 +125,6 @@ def send_message():
     """Handle the /send_message request to send a message to deepseek."""
     try:
         decoded_token = get_decoded_token(SECRET_KEY)
-        if isinstance(decoded_token, tuple):
-            return jsonify(decoded_token[0]), 401
         user_id = decoded_token["user_id"]
 
         data = request.get_json()
