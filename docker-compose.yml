@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  spa:
+    build:
+      context: ./spa
+      dockerfile: Dockerfile
+    environment:
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - CHAT_SERVICE_URL=http://nginx/api/chat 
+      - SECRET_KEY=${SECRET_KEY}
+    ports:
+      - "5001:5001" 
+    networks:
+      - backend
+
+  chat:
+    build:
+      context: ./chat
+      dockerfile: Dockerfile
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - CLIENT_XUNFEI_API_KEY_1=${CLIENT_XUNFEI_API_KEY_1}
+      - CLIENT_XUNFEI_API_KEY_2=${CLIENT_XUNFEI_API_KEY_2}
+      - CLIENT_XUNFEI_BASE_URL=${CLIENT_XUNFEI_BASE_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    networks:
+      - backend
+    deploy:
+      replicas: 2 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      chat:
+        condition: service_healthy
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
