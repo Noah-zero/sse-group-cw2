@@ -157,7 +157,7 @@ jobs:
     # needs: integration-test
     steps:
       - name: ImPaaS-Deploy-core
-        id: impaas-deploy
+        # id: impaas-deploy
         # uses: /impaas/impaas-deploy@v3
         with:
           app-name: core
