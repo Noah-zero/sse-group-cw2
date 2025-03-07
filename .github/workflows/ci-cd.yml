@@ -158,7 +158,7 @@ jobs:
     steps:
       - name: ImPaaS-Deploy-core
         id: impaas-deploy
-        uses: /impaas/impaas-deploy@v3
+        # uses: /impaas/impaas-deploy@v3
         with:
           app-name: core
           deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
