@@ -114,51 +114,53 @@ jobs:
   #     - name: Push Nginx Image
   #       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest
   
-  # integration-test:
-  #     needs: build
-  #     runs-on: ubuntu-latest
-  #     env:
-  #       AUTH_SERVICE_URL: ${{ secrets.AUTH_SERVICE_URL }}
-  #       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-  #       CLIENT_XUNFEI_API_KEY_1: ${{ secrets.CLIENT_XUNFEI_API_KEY_1 }}
-  #       CLIENT_XUNFEI_API_KEY_2: ${{ secrets.CLIENT_XUNFEI_API_KEY_2 }}
-  #       CLIENT_XUNFEI_BASE_URL: ${{ secrets.CLIENT_XUNFEI_BASE_URL }}
-  #       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-  #       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-  #     steps:
-  #       - name: Checkout Code
-  #         uses: actions/checkout@v4
+  integration-test:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      AUTH_SERVICE_URL: ${{ secrets.AUTH_SERVICE_URL }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      CLIENT_XUNFEI_API_KEY_1: ${{ secrets.CLIENT_XUNFEI_API_KEY_1 }}
+      CLIENT_XUNFEI_API_KEY_2: ${{ secrets.CLIENT_XUNFEI_API_KEY_2 }}
+      CLIENT_XUNFEI_BASE_URL: ${{ secrets.CLIENT_XUNFEI_BASE_URL }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  #       - name: Install docker-compose
-  #         run: |
-  #           sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  #           sudo chmod +x /usr/local/bin/docker-compose
+      - name: Install docker-compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
 
-  #       - name: Start Integration Environment
-  #         run: docker-compose up -d --scale chat=2
-        
-  #       - name: Wait for services to be ready
-  #         run: sleep 15
-        
-  #       - name: Run Integration Tests
-  #         run: |
-  #           STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://localhost/health)
-  #           if [ "$STATUS" -ne 200 ]; then
-  #             echo "Integration test failed: expected HTTP 200, got $STATUS"
-  #             exit 1
-  #           fi
-  #           echo "Integration test passed"
-        
-  #       - name: Stop Integration Environment
-  #         run: docker-compose down
+      - name: Start Integration Environment
+        run: docker-compose up -d --scale chat=2
+      
+      - name: Wait for services to be ready
+        run: sleep 15
+      
+      - name: Run Integration Tests
+        run: |
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://localhost/health)
+          if [ "$STATUS" -ne 200 ]; then
+            echo "Integration test failed: expected HTTP 200, got $STATUS"
+            exit 1
+          fi
+          echo "Integration test passed"
+      
+      - name: Stop Integration Environment
+        run: docker-compose down
 
   deploy:
+    runs-on: ubuntu-latest
     # needs: integration-test
-    - name: ImPaaS-Deploy
-      id: impaas-deploy
-      uses: /impaas/impaas-deploy@v3
-      with:
-        app-name: core
-        deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
-        image: ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
-        method: DOCKER_IMAGE
+    steps:
+      - name: ImPaaS-Deploy
+        id: impaas-deploy
+        uses: /impaas/impaas-deploy@v3
+        with:
+          app-name: core
+          deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
+          image: ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
+          method: DOCKER_IMAGE
