@@ -14,7 +14,7 @@ services:
     networks:
       - backend
 
-  chat1:
+  chat1-web.default.svc.cluster.local:
     build:
       context: ./chat
       dockerfile: Dockerfile
@@ -33,9 +33,9 @@ services:
       retries: 3
       start_period: 120s
     ports:
-      - "5002:5002"
+      - "5002:8888"
 
-  chat2:
+  chat2-web.default.svc.cluster.local:
     build:
       context: ./chat
       dockerfile: Dockerfile
@@ -54,7 +54,7 @@ services:
       retries: 3
       start_period: 120s
     ports:
-      - "5003:5002"
+      - "5003:8888"
 
   nginx:
     image: nginx:stable-alpine
