@@ -162,33 +162,34 @@ jobs:
         with:
           app-name: core
           deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
-          method: DOCKER_IMAGE
-
-  deploy-nginx:
-    runs-on: ubuntu-latest
-    # needs: integration-test
-    steps:
-      - name: ImPaaS-Deploy-nginx
-        id: impaas-deploy
-        uses: /impaas/impaas-deploy@v3
-        with:
-          app-name: nginx
-          deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest
-          method: DOCKER_IMAGE
-
-  deploy-chat:
-    runs-on: ubuntu-latest
-    # needs: integration-test
-    steps:
-      - name: ImPaaS-Deploy-chat
-        id: impaas-deploy
-        uses: /impaas/impaas-deploy@v3
-        with:
-          app-name: chat
-          deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest
           method: DOCKER_IMAGE
           run: |
-            tsuru app-scale -a chat -n 2
+            tsuru app deploy -i ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest -a core
+
+  # deploy-nginx:
+  #   runs-on: ubuntu-latest
+  #   # needs: integration-test
+  #   steps:
+  #     - name: ImPaaS-Deploy-nginx
+  #       id: impaas-deploy
+  #       uses: /impaas/impaas-deploy@v3
+  #       with:
+  #         app-name: nginx
+  #         deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
+  #         image: ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest
+  #         method: DOCKER_IMAGE
+
+  # deploy-chat:
+  #   runs-on: ubuntu-latest
+  #   # needs: integration-test
+  #   steps:
+  #     - name: ImPaaS-Deploy-chat
+  #       id: impaas-deploy
+  #       uses: /impaas/impaas-deploy@v3
+  #       with:
+  #         app-name: chat
+  #         deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
+  #         image: ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest
+  #         method: DOCKER_IMAGE
+  #         run: |
+  #           tsuru app-scale -a chat -n 2
