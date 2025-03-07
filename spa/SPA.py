@@ -2,11 +2,10 @@ from flask import Flask, render_template, request, jsonify, Response
 import requests
 import os
 import random
-from dotenv import load_dotenv
+
 
 app = Flask(__name__)
 
-load_dotenv()
 AUTH_SERVICE_URL = os.environ.get("AUTH_SERVICE_URL", "http://127.0.0.1:5000")
 # AUTH_SERVICE_URL = "https://gyya-sse2-users-service.impaas.uk/"
 # CHAT_SERVICE_URL1 = "http://127.0.0.1:5002"
