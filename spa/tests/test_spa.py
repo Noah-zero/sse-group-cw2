@@ -103,6 +103,7 @@ def test_start_chat_missing_token(client_spa):
     response = client_spa.post("/api/start_chat", json={"chat_name": "Test Chat"})
     assert response == 401
 
+
 def test_chat_list_missing_token(client_spa):
     response = client_spa.get("/api/chat_list")
     assert response == 401
