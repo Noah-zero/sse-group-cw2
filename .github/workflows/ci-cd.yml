@@ -134,7 +134,7 @@ jobs:
         id: impaas-deploy
         uses: /impaas/impaas-deploy@v3
         with:
-          app-name: SPA
+          app-name: spa
           deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
           method: DOCKER_IMAGE
 
