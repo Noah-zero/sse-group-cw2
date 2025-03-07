@@ -21,7 +21,7 @@ def index():
 def health():
     CHAT_SERVICE_URL = random.choice(lt)
     try:
-        response = requests.post(f"{CHAT_SERVICE_URL}/health")
+        response = requests.get(f"{CHAT_SERVICE_URL}/health")
         return jsonify(response.json()), response.status_code
     except requests.exceptions.RequestException as e:
         return (
