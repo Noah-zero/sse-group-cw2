@@ -158,10 +158,7 @@ jobs:
     steps:
       - name: Install Tsuru CLI
         run: |
-          curl -L -o tsuru-cli.tar.gz https://github.com/tsuru/tsuru/releases/download/1.26.3/tsuru-server_1.26.3_linux_amd64.tar.gz
-          tar -zxvf tsuru-cli.tar.gz
-          sudo mv tsurud /usr/local/bin/tsuru
-          chmod +x /usr/local/bin/tsuru
+          curl -fsSL "https://tsuru.io/get" | bash
 
       - name: Login to Tsuru
         run: |
