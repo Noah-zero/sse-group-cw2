@@ -5,6 +5,7 @@ services:
     build:
       context: ./spa
       dockerfile: Dockerfile
+    container_name: spa
     environment:
       - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
       - CHAT_SERVICE_URL1=http://chat:5002
@@ -19,6 +20,7 @@ services:
     build:
       context: ./chat
       dockerfile: Dockerfile
+    container_name: chat
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - CLIENT_XUNFEI_API_KEY=${CLIENT_XUNFEI_API_KEY}
