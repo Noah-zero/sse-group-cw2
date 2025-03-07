@@ -167,6 +167,13 @@ jobs:
         env:
           TSURU_TOKEN: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
 
+      - name: Set Tsuru target
+        run: |
+          tsuru target add mytarget ${{ secrets.TSURU_HOST }}
+          tsuru target set mytarget
+        env:
+          TSURU_HOST: ${{ secrets.TSURU_HOST }}
+
       - name: Deploy SPA App
         run: |
           tsuru app-deploy -a core -i ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
