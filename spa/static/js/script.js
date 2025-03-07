@@ -211,6 +211,8 @@ function updateChatBox(sender, message) {
 
     chatBox.appendChild(messageDiv);
 
+    MathJax.typesetPromise();
+
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
@@ -221,12 +223,13 @@ function updateLastChatBubble(sender, newContent) {
     const chatBox = document.getElementById('chat-box');
     const paragraphs = chatBox.getElementsByTagName('p');
 
-    // Looking from behind to forward, match "sender:"
+    // 从后往前找，匹配 “sender:”
     for (let i = paragraphs.length - 1; i >= 0; i--) {
         const p = paragraphs[i];
         if (p.textContent.startsWith(`${sender}:`)) {
-            // Find the last line with the same sender and update its contents
+            // 找到最后一个同样sender的行，更新其内容
             p.innerHTML = `<strong>${sender}:</strong> ${newContent}`;
+            MathJax.typesetPromise();
             return;
         }
     }
