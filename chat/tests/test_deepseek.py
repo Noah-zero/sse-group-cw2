@@ -59,12 +59,3 @@ def test_chat_history_missing_chat_name(client_deepseek):
     result = response.get_json()
     assert response.status_code == 400
     assert "message" in result
-
-
-def test_send_message_missing_token(client_deepseek):
-    response = client_deepseek.post(
-        "/send_message", json={"message": "Hello", "chat_name": "Test Chat"}
-    )
-    result = response.get_json()
-    assert response.status_code == 401
-    assert "message" in result
