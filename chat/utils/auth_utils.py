@@ -37,4 +37,6 @@ def get_user_id_from_token(secret_key):
         user_id: The user_id embedded in the token.
     """
     decoded_token = get_decoded_token(secret_key)
+    if isinstance(decoded_token, tuple):
+        return jsonify(decoded_token[0]), 200
     return decoded_token.get("user_id")
