@@ -73,6 +73,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/spa
         run: pytest tests/ -v
+
   build:
     needs: unit-test
     runs-on: ubuntu-latest
@@ -99,8 +100,43 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest .
 
+      - name: Build Nginx Image
+        working-directory: ./nginx
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest .
+
       - name: Push Chat Image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest
 
       - name: Push SPA Image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
+
+      - name: Push Nginx Image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest
+
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Install Tsuru CLI
+  #       run: |
+  #         curl -L https://github.com/tsuru/tsuru/releases/download/v1.13.0/tsuru-cli_1.13.0_linux_amd64.tar.gz -o tsuru-cli.tar.gz
+  #         tar -zxvf tsuru-cli.tar.gz
+  #         sudo mv tsuru /usr/local/bin/tsuru
+
+  #     - name: Login to Tsuru
+  #       run: |
+  #         tsuru login -a ${{ secrets.TSURU_HOST }} -u ${{ secrets.TSURU_USER }} -p ${{ secrets.TSURU_PASSWORD }}
+
+  #     - name: Deploy SPA
+  #       run: |
+  #         tsuru app-deploy -a spa -i ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
+
+  #     - name: Deploy Chat and Scale to 2 Instances
+  #       run: |
+  #         tsuru app-deploy -a chat -i ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest
+  #         tsuru app-scale -a chat -n 2
+
+  #     - name: Deploy Nginx
+  #       run: |
+  #         tsuru app-deploy -a nginx -i ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest

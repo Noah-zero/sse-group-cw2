@@ -1,16 +1,15 @@
-# Dockerfile.chat
-FROM python:3.12.2-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y gcc build-essential
-
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 5002
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5002", "deepseek:app"]
+ENTRYPOINT ["/entrypoint.sh"]
