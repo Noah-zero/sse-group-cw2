@@ -154,35 +154,11 @@ jobs:
 
   deploy:
     # needs: integration-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Tsuru CLI
-        run: |
-          curl -fsSL "https://tsuru.io/get" | bash
-
-      - name: Setup Tsuru Authentication
-        run: |
-          mkdir -p $HOME/.tsuru
-          echo "$TSURU_TOKEN" > $HOME/.tsuru/token
-        env:
-          TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
-
-      - name: Set Tsuru target
-        run: |
-          tsuru target add mytarget ${{ secrets.TSURU_HOST }}
-          tsuru target set mytarget
-        env:
-          TSURU_HOST: ${{ secrets.TSURU_HOST }}
-
-      - name: Deploy SPA App
-        run: |
-          tsuru app-deploy -a core -i ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
-
-      - name: Deploy Chat App and Scale to 2 Instances
-        run: |
-          tsuru app-deploy -a chat -i ${{ secrets.DOCKERHUB_USERNAME }}/chat:latest
-          tsuru app-scale -a chat -n 2
-
-      - name: Deploy Nginx App
-        run: |
-          tsuru app-deploy -a nginx -i ${{ secrets.DOCKERHUB_USERNAME }}/nginx:latest
+    - name: ImPaaS-Deploy
+      id: impaas-deploy
+      uses: /impaas/impaas-deploy@v3
+      with:
+        app-name: core
+        deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
+        image: ${{ secrets.DOCKERHUB_USERNAME }}/spa:latest
+        method: DOCKER_IMAGE
